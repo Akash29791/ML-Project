@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AQUA-SENSE | Water Quality Analysis</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#f1f6fa;color:#19334a}
+header{background:#073b55;color:white;padding:22px 6%;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+header h1{font-size:25px;letter-spacing:1px}
+header p{font-size:12px;color:#c4e8f1;margin-top:5px}
+nav{background:white;padding:14px 6%;display:flex;gap:20px;flex-wrap:wrap;border-bottom:1px solid #dce7ed}
+nav a{color:#17617b;text-decoration:none;font-weight:bold;font-size:14px}
+main{max-width:1150px;margin:28px auto;padding:0 18px}
+.welcome{background:linear-gradient(120deg,#087e9c,#07516f);color:white;padding:28px;border-radius:14px;margin-bottom:22px}
+.welcome h2{font-size:25px;margin-bottom:8px}
+.welcome p{line-height:1.6;color:#e1f6fa}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;margin-bottom:24px}
+.stat,.panel{background:white;padding:20px;border-radius:12px;box-shadow:0 3px 15px #163d5310}
+.stat small{color:#718696}
+.stat h2{font-size:28px;color:#087e9c;margin-top:9px}
+.panel{margin-bottom:22px}
+.panel h2{font-size:20px;margin-bottom:8px;color:#124e68}
+.muted{color:#728596;font-size:13px;margin-bottom:18px}
+.formgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+label{display:block;font-weight:bold;font-size:13px;margin-bottom:7px}
+input{width:100%;padding:12px;border:1px solid #ccdce4;border-radius:7px;font-size:14px}
+input:focus{outline:2px solid #82cbd9;border-color:#087e9c}
+button{border:0;padding:12px 19px;border-radius:7px;background:#087e9c;color:white;font-weight:bold;cursor:pointer;margin-top:18px}
+button:hover{background:#07516f}
+.secondary{background:#e5f2f6;color:#07516f}
+.result{display:none;margin-top:20px;padding:22px;border-radius:10px;background:#edf7fa;border:1px solid #c5e4eb}
+.result h2{font-size:22px;margin-bottom:10px}
+.score{font-size:38px;font-weight:bold;color:#087e9c}
+.status{display:inline-block;padding:7px 13px;border-radius:20px;font-weight:bold;margin:10px 0}
+.safe{background:#d8f5e4;color:#176b3c}
+.unsafe{background:#ffe0df;color:#a72a27}
+.review{background:#fff0c9;color:#8a5a00}
+table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}
+th,td{text-align:left;padding:12px;border-bottom:1px solid #e4edf1}
+th{background:#edf5f8;color:#28566b}
+footer{text-align:center;padding:25px;color:#758b98;font-size:12px}
+@media(max-width:600px){header h1{font-size:21px}.welcome h2{font-size:21px}table{font-size:11px}}
+</style>
+</head>
+<body>
+<header>
+ <div><h1>💧 AQUA-SENSE</h1><p>SOFTWARE-BASED WATER QUALITY ANALYSIS SYSTEM</p></div>
+ <div>Water Quality Monitoring Portal</div>
+</header>
+<nav>
+ <a href="#dashboard">Dashboard</a>
+ <a href="#analysis">Analysis Lab</a>
+ <a href="#analytics">Test History</a>
+ <a href="#about">About</a>
+</nav>
+<main>
+<section class="welcome" id="dashboard">
+ <h2>Welcome to AQUA-SENSE</h2>
+ <p>A digital platform for preliminary water quality assessment. Enter water sample parameters, analyse the readings and maintain test records.</p>
+</section>
+
+<section class="stats">
+ <div class="stat"><small>Total Tests</small><h2 id="total">0</h2></div>
+ <div class="stat"><small>Safe Assessments</small><h2 id="safeCount">0</h2></div>
+ <div class="stat"><small>Further Testing</small><h2 id="reviewCount">0</h2></div>
+ <div class="stat"><small>Unsafe Assessments</small><h2 id="unsafeCount">0</h2></div>
+</section>
+
+<section class="panel" id="analysis">
+ <h2>🧪 Water Quality Analysis Lab</h2>
+ <p class="muted">Enter sample information and measured water parameters.</p>
+ <form id="waterForm">
+ <div class="formgrid">
+  <div><label>Sample Name</label><input id="sample" placeholder="Example: Sample 01" required></div>
+  <div><label>Water Source</label><input id="source" placeholder="Example: Groundwater" required></div>
+  <div><label>Location</label><input id="location" placeholder="Enter location" required></div>
+  <div><label>Analyst Name</label><input id="analyst" placeholder="Enter analyst name" required></div>
+  <div><label>pH (0–14)</label><input id="ph" type="number" min="0" max="14" step="0.1" value="7.2" required></div>
+  <div><label>TDS (mg/L)</label><input id="tds" type="number" min="0" value="210" required></div>
+  <div><label>Turbidity (NTU)</label><input id="turbidity" type="number" min="0" step="0.1" value="0.8" required></div>
+  <div><label>Total Hardness (mg/L)</label><input id="hardness" type="number" min="0" value="120" required></div>
+  <div><label>Free Chlorine (mg/L)</label><input id="chlorine" type="number" min="0" step="0.1" value="0.5" required></div>
+  <div><label>Temperature (°C)</label><input id="temperature" type="number" step="0.1" value="21" required></div>
+ </div>
+ <button type="submit">Run Water Quality Assessment</button>
+ <button type="reset" class="secondary">Clear Form</button>
+ </form>
+ <div class="result" id="result" aria-live="polite">
+  <h2>Assessment Result</h2>
+  <div class="score" id="score">--</div>
+  <div id="status" class="status">Result</div>
+  <p id="message"></p>
+  <p class="muted" style="margin-top:12px">This is a preliminary rule-based screening score using configured limits, not a certified WQI or laboratory determination.</p>
+  <button onclick="window.print()">Print / Save Report as PDF</button>
+ </div>
+</section>
+
+<section class="panel" id="analytics">
+ <h2>📊 Test History</h2>
+ <p class="muted">Previously assessed samples are saved in this browser.</p>
+ <button class="secondary" onclick="exportCSV()">Export Records as CSV</button>
+ <div style="overflow-x:auto">
+ <table>
+ <thead><tr><th>ID</th><th>Sample</th><th>Location</th><th>Score</th><th>Assessment</th><th>Date</th></tr></thead>
+ <tbody id="history"><tr><td colspan="6">No test records yet.</td></tr></tbody>
+ </table>
+ </div>
+</section>
+
+<section class="panel" id="about">
+ <h2>About AQUA-SENSE</h2>
+ <p class="muted">A software-based water quality assessment application that accepts manually entered readings, checks configured parameter limits, displays a preliminary screening result and maintains sample history.</p>
+ <p><b>Technologies:</b> HTML, CSS, JavaScript and browser local storage.</p>
+ <p style="margin-top:10px;font-size:13px;color:#718696">Note: This application does not use physical sensors. Actual drinking-water safety must be confirmed through appropriate certified laboratory testing.</p>
+</section>
+</main>
+<footer>AQUA-SENSE © 2026 | Software-Based Water Quality Analysis System</footer>
+
+<script>
+let records = JSON.parse(localStorage.getItem("aquaRecords") || "[]");
+let latest = null;
+
+function updateDashboard(){
+ document.getElementById("total").textContent=records.length;
+ document.getElementById("safeCount").textContent=records.filter(r=>r.status==="SAFE").length;
+ document.getElementById("reviewCount").textContent=records.filter(r=>r.status==="NEEDS REVIEW").length;
+ document.getElementById("unsafeCount").textContent=records.filter(r=>r.status==="UNSAFE").length;
+ const body=document.getElementById("history");
+ if(!records.length){body.innerHTML='<tr><td colspan="6">No test records yet.</td></tr>';return;}
+ body.innerHTML=records.slice().reverse().map(r=>
+ `<tr><td>${r.id}</td><td>${escapeHTML(r.sample)}</td><td>${escapeHTML(r.location)}</td><td>${r.score}/100</td><td>${r.status}</td><td>${r.date}</td></tr>`
+ ).join("");
+}
+function escapeHTML(value){
+ return String(value).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+document.getElementById("waterForm").addEventListener("submit",function(e){
+ e.preventDefault();
+ const v={
+ sample:document.getElementById("sample").value.trim(),
+ source:document.getElementById("source").value.trim(),
+ location:document.getElementById("location").value.trim(),
+ analyst:document.getElementById("analyst").value.trim(),
+ ph:Number(document.getElementById("ph").value),
+ tds:Number(document.getElementById("tds").value),
+ turbidity:Number(document.getElementById("turbidity").value),
+ hardness:Number(document.getElementById("hardness").value),
+ chlorine:Number(document.getElementById("chlorine").value),
+ temperature:Number(document.getElementById("temperature").value)
+ };
+ if(Object.values(v).some(x=>typeof x==="number"&&!Number.isFinite(x)))return;
+ let deductions=0;
+ if(v.ph<6.5||v.ph>8.5)deductions+=25;
+ if(v.tds>500)deductions+=20;
+ if(v.turbidity>5)deductions+=20;
+ if(v.hardness>200)deductions+=10;
+ if(v.chlorine<0.2||v.chlorine>1)deductions+=10;
+ if(v.temperature>35)deductions+=10;
+ const score=Math.max(0,100-deductions);
+ const outOfRange=(v.ph<6.5||v.ph>8.5||v.tds>500||v.turbidity>5||v.hardness>200||v.chlorine<0.2||v.chlorine>1||v.temperature>35);
+ const status=score>=80&&!outOfRange?"SAFE":score>=50?"NEEDS REVIEW":"UNSAFE";
+ const date=new Date().toLocaleDateString();
+ latest={...v,id:"WQ-"+(records.length+1),score,status,date};
+ document.getElementById("score").textContent=score+"/100";
+ const badge=document.getElementById("status");
+ badge.textContent=status;
+ badge.className="status "+(status==="SAFE"?"safe":status==="UNSAFE"?"unsafe":"review");
+ document.getElementById("message").textContent=
+ status==="SAFE"?"Entered values are within the configured screening limits.":status==="UNSAFE"?"One or more entered values show significant deviation from configured screening limits. Further investigation is recommended.":"Some entered values need additional review and laboratory confirmation.";
+ document.getElementById("result").style.display="block";
+ records.push(latest);
+ localStorage.setItem("aquaRecords",JSON.stringify(records));
+ updateDashboard();
+ document.getElementById("result").scrollIntoView({behavior:"smooth"});
+});
+function exportCSV(){
+ if(!records.length){alert("No records available to export.");return;}
+ const columns=["id","sample","source","location","analyst","ph","tds","turbidity","hardness","chlorine","temperature","score","status","date"];
+ const csv=[columns.join(","),...records.map(r=>columns.map(k=>'"'+String(r[k]??"").replace(/"/g,'""')+'"').join(","))].join("\n");
+ const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement("a");a.href=url;a.download="aqua_sense_records.csv";a.click();
+ URL.revokeObjectURL(url);
+}
+document.getElementById("waterForm").addEventListener("reset",()=>{
+ document.getElementById("result").style.display="none";
+});
+updateDashboard();
+</script>
+</body>
+</html>
